@@ -1,0 +1,14 @@
+/* for sign in and sign up page */
+.bg-image {
+  background-image: url('./Images/turf1.jpg');
+  background-size: cover;
+}
+
+.custom-box-shadow {
+  box-shadow: 0px 0px 15px 8px rgba(0, 0, 0, 0.5);
+}
+
+.custom-width {
+  max-width: 380px;
+  width: 100%;
+}
