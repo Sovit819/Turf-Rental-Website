@@ -41,11 +41,14 @@ def signup(request):
 @api_view(['POST'])
 def signin(request):
     if request.method == 'POST':
-        email = request.data.get('email')
+        username = request.data.get('username')
         password = request.data.get('password')
-        print(f"Email: {email}, Password: {password}")
-        user = authenticate(request, email=email, password=password)
-        print(f"Authenticated User: {user}") 
+        if not username or not password:
+            return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        print(f"Username: {username}, Password: {password}")
+        user = authenticate(request, username=username, password=password)
+        print(f"Authenticated User: {user}")
 
         if user:
             refresh = RefreshToken.for_user(user)

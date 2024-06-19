@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Signin = () => {
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState("");
@@ -17,7 +17,7 @@ const Signin = () => {
 
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/signin/', {
-                email: email,
+                username: username,
                 password: password
             });
 
@@ -39,13 +39,13 @@ const Signin = () => {
                 {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
                 <form onSubmit={submitHandler}>
                     <div className='mb-3'>
-                        <label htmlFor='email'><strong>Email</strong></label>
+                        <label htmlFor='username'><strong>Username</strong></label>
                         <input
                             type='text'
-                            placeholder='Enter your email'
+                            placeholder='Enter your username'
                             className='form-control'
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             required
                         />
                     </div>
