@@ -47,32 +47,51 @@ const Signup = () => {
                 <form onSubmit={handleSubmit}>
                     <div className='form-group'>
                         <label htmlFor='first_name'>First Name</label>
-                        <input type='text' id='first_name' placeholder='Enter your first name' className='form-control' onChange={handleChange} required />
+                        <input type='text' id='first_name' 
+                        placeholder='Enter your first name' 
+                        className='form-control' 
+                        onChange={handleChange}
+                         required />
                     </div>
 
                     <div className='form-group'>
                         <label htmlFor='last_name'>Last Name</label>
-                        <input type='text' id='last_name' placeholder='Enter your last name' className='form-control' onChange={handleChange} />
+                        <input type='text' id='last_name' 
+                        placeholder='Enter your last name' 
+                        className='form-control' 
+                        onChange={handleChange} />
                     </div>
 
                     <div className='form-group'>
                         <label htmlFor='email'>Email</label>
-                        <input type='email' id='email' placeholder='Enter your email' className='form-control' onChange={handleChange} required />
+                        <input type='email' id='email' 
+                        placeholder='Enter your email' 
+                        className='form-control' 
+                        onChange={handleChange} required />
                     </div>
 
                     <div className='form-group'>
                         <label htmlFor='username'>Username</label>
-                        <input type='text' id='username' placeholder='Enter your username' className='form-control' onChange={handleChange} required />
+                        <input type='text' id='username' 
+                        placeholder='Enter your username' 
+                        className='form-control' 
+                        onChange={handleChange} required />
                     </div>
 
                     <div className='form-group'>
                         <label htmlFor='password'>Password</label>
-                        <input type='password' id='password' placeholder='Enter your password' className='form-control' onChange={handleChange} required />
+                        <input type='password' id='password' 
+                        placeholder='Enter your password' 
+                        className='form-control' 
+                        onChange={handleChange} required />
                     </div>
 
                     <div className='form-group'>
                         <label htmlFor='phone_number'>Phone Number</label>
-                        <input type='text' id='phone_number' placeholder='Enter your phone number' className='form-control' onChange={handleChange} required />
+                        <input type='text' id='phone_number' 
+                        placeholder='Enter your phone number' 
+                        className='form-control' 
+                        onChange={handleChange} required />
                     </div>
 
                     <button type='submit' className='btn btn-success w-100 mt-3'>Sign up</button>

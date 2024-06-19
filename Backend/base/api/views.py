@@ -41,7 +41,7 @@ def signup(request):
 @api_view(['POST'])
 def signin(request):
     if request.method == 'POST':
-        email = request.data.get('username')
+        email = request.data.get('email')
         password = request.data.get('password')
         print(f"Email: {email}, Password: {password}")
         user = authenticate(request, email=email, password=password)
