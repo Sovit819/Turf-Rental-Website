@@ -4,7 +4,7 @@ import turfs from '../data/turfs'
 
 const Home = () => {
   return (
-    <div className="container ml-10 mt-4">
+    <div className="container ml-10 mt-4" style={{ marginTop: '80px' }}>
       <h2>Turf Booking</h2>
       <div className="row">
 

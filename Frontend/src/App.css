@@ -16,6 +16,29 @@ body {
   background-size: cover;
 }
 
+/* Header */
+.fixed-top-navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1030; 
+}
+
+main {
+  padding-top: 70px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand img {
+  height: 50px; 
+  margin-right: -25px; 
+}
+
+
 
 /* for sign in and sign up page */
 

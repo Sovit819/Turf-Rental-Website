@@ -6,7 +6,7 @@ const Header = () => {
     const { user, logoutUser } = useContext(AuthContext);
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top-navbar">
             <div className="container-fluid">
                 <Link className="navbar-brand" to="/">
                     <img src="/Images/logo.png" alt="Brand Logo" height="50" className="d-inline-block align-text-top" />

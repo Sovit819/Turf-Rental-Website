@@ -1,7 +1,7 @@
 const turfs = [
     {
       id: 1,
-      images: ['/Images/turf1.jpg', 'Images/turf2.jpg', 'Images/turf2.jpg'],
+      images: ['/Images/turf1.jpg', '/Images/turf2.jpg', '/Images/turf3.jpg'],
       name: 'Turf 1',
       description: 'This is a description for Turf 1.',
       price: '$50/hour',
