@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import AuthContext from '../../Context/AuthContext';
 
 const Header = () => {
+    const { user, logoutUser } = useContext(AuthContext);
+
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <div className="container-fluid">
@@ -23,12 +26,25 @@ const Header = () => {
                         <li className="nav-item">
                             <Link className="nav-link" to="/about">About Us</Link>
                         </li>
-                        <li className="nav-item">
-                            <Link className="btn btn-primary me-2" to="/signin">Sign In</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="btn btn-secondary" to="/signup">Sign Up</Link>
-                        </li>
+                        {user ? (
+                            <>
+                                <li className="nav-item">
+                                    <span className="navbar-text me-2">Hello, {user.username}</span>
+                                </li>
+                                <li className="nav-item">
+                                    <button className="btn btn-secondary" onClick={logoutUser}>Logout</button>
+                                </li>
+                            </>
+                        ) : (
+                            <>
+                                <li className="nav-item">
+                                    <Link className="btn btn-primary me-2" to="/signin">Sign In</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="btn btn-secondary" to="/signup">Sign Up</Link>
+                                </li>
+                            </>
+                        )}
                     </ul>
                 </div>
             </div>
@@ -36,5 +52,4 @@ const Header = () => {
     )
 }
 
-export default Header
-
+export default Header;

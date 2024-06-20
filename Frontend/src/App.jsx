@@ -11,25 +11,29 @@ import Signin from './Components/user/Signin';
 import Home from './Components/Home';
 import Footer from './Components/layout/Footer';
 import TurfDetails from './Components/TurfDetails';
+import Payment from './Components/Payment';
 
 function App() {
   return (
 
     <div className="d-flex flex-column min-vh-100">
-    <BrowserRouter>
-    <Header/>
-      <AuthProvider>
-        <main className="flex-grow-1">
-        <Routes>
-          <Route path='/signin' element={<Signin />} />
-          <Route path='/signup' element={<Signup />} />
-          <Route path='/' element={<Home />} />
-          <Route path="/turf/:id" element={<TurfDetails />} />
-        </Routes>
+      <BrowserRouter>
+        <AuthProvider>
+          <Header />
+          <main className="flex-grow-1">
+            <Routes>
+              <Route path='/signin' element={<Signin />} />
+              <Route path='/signup' element={<Signup />} />
+              <Route path='/' element={<Home />} />
+              <Route path="/turf/:id" element={<TurfDetails />} />
+              <Route path='/payment' element={<PrivateRoute element={<Payment />} />} />
+
+            </Routes>
           </main>
-      </AuthProvider>
-      <Footer/>
-    </BrowserRouter>
+          <Footer />
+        </AuthProvider>
+
+      </BrowserRouter>
     </div>
   );
 }

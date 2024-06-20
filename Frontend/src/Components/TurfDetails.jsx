@@ -12,10 +12,11 @@ function TurfDetails() {
   const [bookedSlots, setBookedSlots] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const handleBooking = () => {
+  const handleBooking = (e) => {
+    e.preventDefault();
     const newSlot = { start: selectedStartTime, end: selectedEndTime };
     setBookedSlots([...bookedSlots, newSlot]);
-    navigate('/payment'); // Navigate to payment page or another route after booking
+    navigate('/payment'); 
   };
 
   const isSlotAvailable = (start, end) => {
@@ -35,10 +36,8 @@ function TurfDetails() {
 
   return (
     <div className="container text-center mt-4">
-      <h2>{turf.name}</h2>
-
       {/* Small Container for Carousel */}
-      <div className="carousel-container" style={{ maxWidth: '600px', margin: '0 auto' }}>
+      <div className="carousel-container" style={{ maxWidth: '800px', margin: '0 auto' }}>
         {/* Bootstrap Carousel */}
         <div id="carouselExampleIndicators" className="carousel slide" data-ride="carousel">
           <div className="carousel-inner">
@@ -59,10 +58,11 @@ function TurfDetails() {
         </div>
       </div>
 
+      <h2>{turf.name}</h2>
       <p>{turf.description}</p>
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <form>
+          <form onSubmit={handleBooking}>
             <div className="form-group">
               <label>From:</label>
               <input type="time" className="form-control" value={selectedStartTime} onChange={(e) => setSelectedStartTime(e.target.value)} />
@@ -71,7 +71,7 @@ function TurfDetails() {
               <label>To:</label>
               <input type="time" className="form-control" value={selectedEndTime} onChange={(e) => setSelectedEndTime(e.target.value)} />
             </div>
-            <button className="btn btn-primary btn-block" onClick={handleBooking} disabled={!selectedStartTime || !selectedEndTime || !isSlotAvailable(selectedStartTime, selectedEndTime)}>
+            <button type="submit" className="btn btn-primary btn-block mb-4" disabled={!selectedStartTime || !selectedEndTime || !isSlotAvailable(selectedStartTime, selectedEndTime)}>
               Book Now
             </button>
           </form>
