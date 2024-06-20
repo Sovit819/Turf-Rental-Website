@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
+import AuthContext from '../Context/AuthContext';
 
 const PrivateRoute = ({ element }) => {
-    const accessToken = localStorage.getItem('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
+    const { authTokens } = useContext(AuthContext);
 
-    if (!accessToken || !refreshToken) {
+    if (!authTokens) {
         return <Navigate to='/signin' />;
     }
 

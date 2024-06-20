@@ -46,9 +46,9 @@ def signin(request):
         if not username or not password:
             return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        print(f"Username: {username}, Password: {password}")
+        # print(f"Username: {username}, Password: {password}")
         user = authenticate(request, username=username, password=password)
-        print(f"Authenticated User: {user}")
+        # print(f"Authenticated User: {user}")
 
         if user:
             refresh = RefreshToken.for_user(user)

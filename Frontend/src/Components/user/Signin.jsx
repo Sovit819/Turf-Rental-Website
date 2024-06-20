@@ -1,30 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import '../../App.css';
-import { Link, useNavigate } from 'react-router-dom';
-
-// import AuthContext from '../../Context/AuthContext';
-
-import axios from 'axios';
+import { Link } from 'react-router-dom';
+import AuthContext from '../../Context/AuthContext';
 
 const Signin = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState("");
+    
+    const { signinUser } = useContext(AuthContext);
 
     const submitHandler = async (event) => {
         event.preventDefault();
 
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/signin/', {
-                username: username,
-                password: password
-            });
-
-            localStorage.setItem('accessToken', response.data.access);
-            localStorage.setItem('refreshToken', response.data.refresh);
-
-            navigate('/home');
+            await signinUser(username, password);
         } catch (error) {
             console.error('Error signing in:', error);
             setErrorMessage(error.response?.data?.error || 'An error occurred. Please try again.');

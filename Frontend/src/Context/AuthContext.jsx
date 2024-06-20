@@ -18,10 +18,10 @@ export const AuthProvider = ({ children }) => {
 
     const navigate = useNavigate();
 
-    const signinUser = async (email, password) => {
+    const signinUser = async (username, password) => {
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/token/', {
-                email,
+                username,
                 password
             });
 
