@@ -22,7 +22,7 @@ const Signin = () => {
     };
 
     return (
-        <div className='d-flex justify-content-center align-items-center bg-light vh-100 bg-image'>
+        <div className='d-flex justify-content-center align-items-center vh-100 bg-image'>
             <div className='bg-white p-3 rounded custom-box-shadow custom-width'>
                 <h3 className='text-center'>Sign In</h3>
                 <hr />

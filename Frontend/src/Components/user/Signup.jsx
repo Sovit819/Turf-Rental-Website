@@ -39,8 +39,8 @@ const Signup = () => {
     };
 
     return (
-        <div className='d-flex justify-content-center align-items-center bg-light vh-100 bg-image'>
-            <div className='bg-white p-3 rounded custom-box-shadow custom-width'>
+        <div className='d-flex justify-content-center align-items-center  mt-2 mb-2'>
+            <div className='bg-white p-4 rounded custom-box-shadow custom-width'>
                 <h3 className='text-center'>Sign Up</h3>
                 <hr />
                 {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
