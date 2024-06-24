@@ -8,8 +8,8 @@ body {
   overflow-x: hidden;
   background-image: linear-gradient(
       0deg,
-      rgba(202, 200, 200, 0.775),
-      rgba(211, 211, 211, 0.77)
+      rgba(243, 239, 239, 0.775),
+      rgba(249, 243, 243, 0.77)
     ),
     url("../Images/background.png");
   background-repeat: no-repeat;
@@ -61,4 +61,10 @@ main {
 
 .container-without-background p {
   margin-bottom: 10px;
+}
+
+/* Home page card */
+.card-img-top {
+  height: 250px; 
+  object-fit: cover;
 }

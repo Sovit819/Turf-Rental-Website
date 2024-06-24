@@ -13,4 +13,8 @@ urlpatterns = [
     
     path('signup/', views.signup, name='Signup'),
     path('signin/', views.signin, name='Signin'),
+    path('turfsDetails/', views.turf_list, name='turf-list'),
+    path('turfsDetails/<int:id>/', views.turf_detail, name='turf_detail'),  # New route for turf details
+
+    
 ]

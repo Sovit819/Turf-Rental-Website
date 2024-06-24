@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from base.models import TurfDetails,TurfImage
 
+#user model serializer
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,3 +35,16 @@ class UserSerializer(serializers.ModelSerializer):
             phone_number=validated_data['phone_number']
         )
         return user
+
+# Turf Model Serializer
+class TurfImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TurfImage
+        fields = ('image',)
+
+class TurfDetailsSerializer(serializers.ModelSerializer):
+    turf_images = TurfImageSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TurfDetails
+        fields = ('id', 'name', 'description', 'price', 'turf_images')

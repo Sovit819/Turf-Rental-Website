@@ -28,15 +28,15 @@ function TurfBooking() {
 
     return (
         <div className="container">
-            <form onSubmit={handleBooking} className="container-without-background shadow-lg p-4">
-                <div className="form-group">
+            <form onSubmit={handleBooking} className="container-without-background shadow-lg mt-2 p-3">
+                <div className="form-group mb-2">
                     <label>Select Date: </label>
                     <CustomDatePicker
                         selectedDate={selectedDate}
                         onChange={date => setSelectedDate(date)}
                     />
                 </div>
-                <div className="form-group">
+                <div className="form-group mb-2">
                     <label>From:</label>
                     <input
                         type="time"
@@ -57,14 +57,16 @@ function TurfBooking() {
                     />
                 </div>
 
+                <div className='text-center'>
                 <button
                     type="submit"
-                    className="btn btn-primary btn-block mb-3"
+                    className="btn btn-primary btn-block  mt-3 mb-2 "
                     style={{ backgroundColor: 'green', borderColor: 'green' }}
                     disabled={!selectedDate || !selectedStartTime || !selectedEndTime || !isSlotAvailable(selectedStartTime, selectedEndTime, selectedDate)}
                 >
                     Book Now
                 </button>
+                </div>
             </form>
 
         </div>

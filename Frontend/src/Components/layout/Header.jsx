@@ -38,7 +38,7 @@ const Header = () => {
                         ) : (
                             <>
                                 <li className="nav-item">
-                                    <Link className="btn btn-primary me-2" to="/signin">Sign In</Link>
+                                    <Link className="btn btn-primary me-2 mb-2 mb-lg-0" to="/signin">Sign In</Link>
                                 </li>
                                 <li className="nav-item">
                                     <Link className="btn btn-secondary" to="/signup">Sign Up</Link>
