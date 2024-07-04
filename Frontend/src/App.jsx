@@ -28,8 +28,12 @@ function App() {
               <Route path='/signup' element={<Signup />} />
               <Route path='/' element={<Home />} />
               <Route path='/turf/:id' element={<TurfDetails />} />
-              <Route path='/turf/:id/booking' element={<TurfBooking />} />
-              <Route path='/turf/:id/payment' element={<PrivateRoute element={<Payment />} />} />
+              <Route path="/turf/:id/booking"
+                element={<PrivateRoute element={<TurfBooking />} />}
+              />
+              <Route path='/turf/:id/payment' 
+              element={<PrivateRoute element={<Payment />} />} />
+              
             </Routes>
           </main>
           <Footer />

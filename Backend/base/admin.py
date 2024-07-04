@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django import forms
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, TurfDetails, TurfImage
+from .models import CustomUser, TurfDetails, TurfImage, Booking, Payment
 from django.forms import inlineformset_factory
 
 
@@ -56,3 +56,16 @@ class TurfDetailsAdmin(admin.ModelAdmin):
             'fields': ('name', 'description', 'price')
         }),
     )
+@admin.register(Booking)
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ('user', 'turf', 'date', 'start_time', 'end_time', 'phone_number','payment_status')
+    search_fields = ('user__email', 'turf__name')
+    list_filter = ('date', 'turf', 'payment_status')
+    autocomplete_fields = ['user'] 
+
+# Payment Admin
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('booking', 'amount', 'payment_method')
+    search_fields = ('booking__user__email', 'booking__turf__name')
+    list_filter = ('payment_method',)

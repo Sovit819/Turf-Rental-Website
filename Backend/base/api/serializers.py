@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from base.models import TurfDetails,TurfImage
+from base.models import TurfDetails,TurfImage, Booking, Payment
 
 #user model serializer
 User = get_user_model()
@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name','email','username', 'password', 'phone_number']
+        fields = ['id','first_name', 'last_name','email','username', 'password', 'phone_number']
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -48,3 +48,18 @@ class TurfDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TurfDetails
         fields = ('id', 'name', 'description', 'price', 'turf_images')
+
+
+# Booking Serializer
+class BookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = ['user', 'turf', 'phone_number', 'date', 'start_time', 'end_time']
+
+
+
+# Payment Serializer
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['id', 'booking', 'amount', 'payment_method', 'phone_number']

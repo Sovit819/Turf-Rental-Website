@@ -30,9 +30,9 @@ const Signup = () => {
             setErrorMessage('');
             navigate('/signin');
         } catch (error) {
-            console.error('Error signing up:', error);
-            if (error.response && error.response.data && error.response.data.email) {
-                setErrorMessage(error.response.data.email[0]);  
+            if (error.response && error.response.data && error.response.data.error === 'Username already exists') {
+                setErrorMessage('Username already exists');
+            } else {
                 setErrorMessage('Error signing up. Please try again.');
             }
         }
