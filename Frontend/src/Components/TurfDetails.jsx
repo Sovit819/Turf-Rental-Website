@@ -63,7 +63,7 @@ const TurfDetails = () => {
       <div className="container-without-background mb-4" style={{ maxWidth: '850px', margin: '0 auto' }}>
         <h2>{turf.name}</h2>
         <p>{turf.description}</p>
-        <p>Price: {turf.price}</p>
+        <p>Price: Rs.{turf.price}/hour</p>
         <Button variant="primary" onClick={handleShow}>
           Select the Slot
         </Button>

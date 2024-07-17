@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
 class TurfDetails(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
-    price = models.CharField(max_length=50)
+    price = models.FloatField(max_length=50)
 
     def __str__(self):
         return self.name
@@ -47,6 +47,8 @@ class Booking(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     payment_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    booking_date = models.DateField()
     
     def __str__(self):
         return f"Booking by {self.user.email} for {self.turf.name} on {self.date}"
@@ -62,6 +64,7 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=10, choices=PAYMENT_METHOD_CHOICES)
     phone_number = models.CharField(max_length=15)
+    transaction_uuid = models.CharField(max_length=50)
     
     def __str__(self):
         return f"Payment for {self.booking.turf.name} by {self.booking.user.email} - {self.amount} via {self.get_payment_method_display()}"

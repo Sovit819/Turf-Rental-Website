@@ -2,18 +2,19 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import CustomDatePicker from '../Utils/CustomDatePicker';
-import AuthContext from '../Context/AuthContext'; // Assuming you have an AuthContext for user authentication
+import AuthContext from '../Context/AuthContext';
 
 function TurfBooking() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user } = useContext(AuthContext); // Access user details from context (assuming you have this context)
+    const { user } = useContext(AuthContext);
 
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedStartTime, setSelectedStartTime] = useState('');
     const [selectedEndTime, setSelectedEndTime] = useState('');
-    const [loading, setLoading] = useState(false); // To manage loading state
-    const [errorMessage, setErrorMessage] = useState(''); // To display error message
+    const [paymentMethod, setPaymentMethod] = useState('esewa');
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const formatDate = (date) => {
         const year = date.getFullYear();
@@ -27,7 +28,6 @@ function TurfBooking() {
 
         const formattedDate = selectedDate ? formatDate(selectedDate) : null;
 
-        // Check availability before proceeding with booking
         const availabilityCheckData = {
             turf: id,
             date: formattedDate,
@@ -36,34 +36,42 @@ function TurfBooking() {
         };
 
         try {
-            setLoading(true); // Set loading state while waiting for response
-            setErrorMessage(''); // Clear previous error message
+            setLoading(true);
+            setErrorMessage('');
 
             const availabilityResponse = await axios.post('http://127.0.0.1:8000/api/availability/', availabilityCheckData);
 
             if (availabilityResponse.status === 200) {
-                // Proceed with saving the booking
                 const bookingData = {
-                    user: user.id, // Assuming user.id is available from context
-                    phone_number: user.phone_number, // Assuming user.phone_number is available from context
-                    turf: id,
+                    user_id: user.id,
+                    phone_number: user.phone_number,
+                    turf_id: id,
                     date: formattedDate,
                     start_time: selectedStartTime,
-                    end_time: selectedEndTime
+                    end_time: selectedEndTime,
+                    payment_method: paymentMethod
                 };
-                console.log(bookingData);
 
-                const saveBookingResponse = await axios.post('http://127.0.0.1:8000/api/bookings/', bookingData);
+                if (paymentMethod === 'cash') {
+                    const cashPaymentResponse = await axios.post('http://127.0.0.1:8000/api/initiate-payment/', bookingData);
 
-                if (saveBookingResponse.status === 201) {
-                    // Successfully saved booking
-                    navigate(`/turf/${id}/payment`);
+                    if (cashPaymentResponse.status === 201) {
+                        alert('Booking Successful with Cash Payment');
+                        navigate(`/user/${user.id}/bookingHistory`);
+                    } else {
+                        setErrorMessage('Failed to book with cash payment. Please try again.');
+                    }
                 } else {
-                    // Handle booking save failure
-                    alert('Failed to save booking. Please try again.');
+                    const initiatePaymentResponse = await axios.post('http://127.0.0.1:8000/api/initiate-payment/', bookingData, { withCredentials: true });
+
+                    if (initiatePaymentResponse.status === 200) {
+                        const esewaRedirectUrl = initiatePaymentResponse.data.redirectUrl;
+                        window.location.href = esewaRedirectUrl;  // This handles the redirection
+                    } else {
+                        setErrorMessage('Failed to initiate payment. Please try again.');
+                    }
                 }
             } else {
-                // Handle availability check failure
                 setErrorMessage('Slot not available. Please choose another time.');
             }
         } catch (error) {
@@ -74,7 +82,7 @@ function TurfBooking() {
                 alert('An error occurred while booking. Please try again.');
             }
         } finally {
-            setLoading(false); // Reset loading state after request completes
+            setLoading(false);
         }
     };
 
@@ -109,6 +117,18 @@ function TurfBooking() {
                     />
                 </div>
 
+                <div className="form-group mb-2">
+                    <label>Payment Method:</label>
+                    <select
+                        className="form-control"
+                        value={paymentMethod}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                    >
+                        <option value="esewa">eSewa</option>
+                        <option value="cash">Cash</option>
+                    </select>
+                </div>
+
                 {errorMessage && (
                     <div className="alert alert-danger" role="alert">
                         {errorMessage}
@@ -120,9 +140,9 @@ function TurfBooking() {
                         type="submit"
                         className="btn btn-primary btn-block mt-3 mb-2"
                         style={{ backgroundColor: 'green', borderColor: 'green' }}
-                        disabled={!selectedDate || !selectedStartTime || !selectedEndTime || loading} // Disable button during loading
+                        disabled={!selectedDate || !selectedStartTime || !selectedEndTime || loading}
                     >
-                        {loading ? 'Booking...' : 'Book Now'}
+                        {loading ? 'Processing...' : 'Book Now'}
                     </button>
                 </div>
             </form>

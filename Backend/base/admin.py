@@ -58,7 +58,7 @@ class TurfDetailsAdmin(admin.ModelAdmin):
     )
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('user', 'turf', 'date', 'start_time', 'end_time', 'phone_number','payment_status')
+    list_display = ('user', 'turf', 'date', 'start_time', 'end_time', 'phone_number','amount','payment_status')
     search_fields = ('user__email', 'turf__name')
     list_filter = ('date', 'turf', 'payment_status')
     autocomplete_fields = ['user'] 

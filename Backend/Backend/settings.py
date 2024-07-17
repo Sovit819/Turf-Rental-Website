@@ -29,6 +29,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#payment
+ESEWA_MERCHANT_ID = '9806800001'
+ESEWA_SECRET_KEY = '8gBm/:&EnhH.1/q'
+ESEWA_SUCCESS_URL = 'http://localhost:5173'  
+ESEWA_FAILURE_URL = 'http://localhost:8000/api/payment-failure'
+
+SUCCESS_REDIRECT_URL = 'http://localhost:5173/user/{user_id}/bookingHistory'
 
 # Application definition
 
@@ -92,6 +99,7 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 
@@ -103,6 +111,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 600
+SESSION_COOKIE_NAME = 'sessionid' 
+SESSION_COOKIE_HTTPONLY = True
+
 
 ROOT_URLCONF = 'Backend.urls'
 
@@ -178,4 +192,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS=True
+CORS_ALLOW_CREDENTIALS = True
 

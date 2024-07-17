@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 import { AuthProvider } from './Context/AuthContext';
 
 import PrivateRoute from './Utils/PrivateRoute';
@@ -14,7 +13,7 @@ import Home from './Components/Home';
 import Footer from './Components/layout/Footer';
 import TurfDetails from './Components/TurfDetails';
 import TurfBooking from './Components/TurfBooking';
-import Payment from './Components/Payment';
+import BookingHistory from './Components/BookingHistory';
 
 function App() {
   return (
@@ -31,8 +30,11 @@ function App() {
               <Route path="/turf/:id/booking"
                 element={<PrivateRoute element={<TurfBooking />} />}
               />
-              <Route path='/turf/:id/payment' 
-              element={<PrivateRoute element={<Payment />} />} />
+              
+              <Route path ='/user/:id/bookingHistory'
+                element ={<PrivateRoute element={<BookingHistory/>}/>}
+              />
+              
               
             </Routes>
           </main>

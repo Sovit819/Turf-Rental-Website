@@ -30,5 +30,11 @@ urlpatterns = [
     path('payments/', PaymentListCreateView.as_view(), name='payment-list-create'),
     path('payments/<int:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
 
+    path('initiate-payment/', views.initiate_payment, name='initiate_payment'),
+    path('payment-success/', views.payment_success, name='payment_success'),
+    path('payment-failure/', views.payment_failure, name='payment_failure'),
+
+    path('booking-history/', views.booking_history, name='booking_history'),
+
     
 ]

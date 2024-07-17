@@ -54,7 +54,7 @@ class TurfDetailsSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = ['user', 'turf', 'phone_number', 'date', 'start_time', 'end_time']
+        fields = ['user', 'turf', 'phone_number', 'date', 'start_time', 'end_time','amount', 'payment_status','booking_date']
 
 
 
