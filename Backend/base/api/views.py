@@ -1,9 +1,10 @@
 from datetime import datetime
+from django.utils import timezone
 from django.contrib.auth import authenticate
 from django.shortcuts import redirect
-import requests
+
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError, JsonResponse
+from django.http import JsonResponse
 from django.utils.http import urlencode
 from django.http import Http404
 from rest_framework import status, generics
@@ -12,7 +13,7 @@ from rest_framework.decorators import api_view
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from base.models import TurfDetails, Booking, Payment, CustomUser
+from base.models import TemporaryBookingData, TurfDetails, Booking, Payment, CustomUser
 from .serializers import TurfDetailsSerializer, UserSerializer, BookingSerializer, PaymentSerializer
 
 import uuid
@@ -40,6 +41,15 @@ def getRoutes(request):
 @api_view(['POST'])
 def signup(request):
     if request.method == 'POST':
+        username = request.data.get('username', None)
+        email = request.data.get('email')
+        
+        if CustomUser.objects.filter(username=username).exists():
+            return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+        if CustomUser.objects.filter(email = email).exists():
+            return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+        
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -50,12 +60,13 @@ def signup(request):
 @api_view(['POST'])
 def signin(request):
     if request.method == 'POST':
-        username = request.data.get('username')
+        email = request.data.get('email')
         password = request.data.get('password')
-        if not username or not password:
-            return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not email or not password:
+            return Response({'error': 'Email and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
 
         if user:
             refresh = RefreshToken.for_user(user)
@@ -157,12 +168,12 @@ def initiate_payment(request):
                 return JsonResponse({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
             
             amount = calculate_booking_amount(turf_id, start_time, end_time)
-            
             transaction_uuid = uuid.uuid4()
-            print(transaction_uuid)
+            booking_id = generate_booking_id()
 
             if payment_method == 'cash':
                 booking = Booking.objects.create(
+                    booking_id = booking_id,
                     user_id=user_id,
                     turf_id=turf_id,
                     phone_number=phone_number,
@@ -184,17 +195,24 @@ def initiate_payment(request):
             
             elif payment_method == 'esewa':
 
-                # Store booking data in session
-                booking_data['amount'] = 1
-                request.session['booking_data'] = booking_data
-                request.session.save()
+                TemporaryBookingData.objects.create(
+                    booking_id = booking_id,
+                    transaction_uuid=transaction_uuid,
+                    user_id=user_id,
+                    phone_number=phone_number,
+                    turf_id=turf_id,
+                    date=date,
+                    start_time=start_time,
+                    end_time=end_time,
+                    amount=amount  
+                )
 
                 esewa_data = {
-                    'amt': 1,
+                    'amt': amount,
                     'txAmt': 0,
                     'psc': 0,
                     'pdc': 0,
-                    'tAmt': 1,
+                    'tAmt': amount,
                     'scd': 'EPAYTEST',  # Replace with your eSewa merchant ID
                     'pid': transaction_uuid,
                     'su': settings.ESEWA_SUCCESS_URL,
@@ -202,6 +220,7 @@ def initiate_payment(request):
                 }
 
                 esewa_redirect_url = 'https://uat.esewa.com.np/epay/main?' + urlencode(esewa_data)
+                print(esewa_redirect_url)
                 return JsonResponse({'redirectUrl': esewa_redirect_url}, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -213,72 +232,55 @@ def initiate_payment(request):
 @api_view(['GET'])
 def payment_success(request):
     if request.method == 'GET':
-        product_code = 'EPAYTEST'
-        total_amount = request.GET.get('amt')
-        transaction_uuid = request.GET.get('oid')
-        ref_id = request.GET.get('refId')
-
-        if not product_code or not total_amount or not transaction_uuid:
-            return HttpResponseBadRequest("Missing required parameters")
-
+        oid = request.GET.get('oid')
+        amt = request.GET.get('amt')
+        refId = request.GET.get('refId')
+        
         try:
-            esewa_verify_url = 'https://uat.esewa.com.np/api/epay/transaction/status/'
-            params = {
-                'product_code': product_code,
-                'transaction_uuid': transaction_uuid,
-                'total_amount': total_amount,
-            }
+            temporary_data = TemporaryBookingData.objects.get(transaction_uuid=oid)
+        except TemporaryBookingData.DoesNotExist:
+            return JsonResponse({'error': 'No booking data found for this transaction'}, status=status.HTTP_400_BAD_REQUEST)
+    
+        if not (oid and amt and refId):
+            notFound_redirect_url = f'http://localhost:5173/user/{temporary_data.user_id}/paymentSuccess?status=NOT_FOUND'
+            return redirect(notFound_redirect_url)        
 
-            response = requests.get(esewa_verify_url, params=params)
-            print(response)
-            response_content = response.json()
-            print(response_content)
+        # Create booking and payment records
+        booking = Booking.objects.create(
+            booking_id = temporary_data.booking_id,
+            user_id=temporary_data.user_id,
+            turf_id=temporary_data.turf_id,
+            phone_number=temporary_data.phone_number,
+            date=temporary_data.date,
+            start_time=temporary_data.start_time,
+            end_time=temporary_data.end_time,
+            payment_status='Paid',
+            amount=temporary_data.amount,
+            booking_date=datetime.now()
+        )
+        payment = Payment.objects.create(
+            booking=booking,
+            amount=temporary_data.amount,
+            payment_method='esewa',
+            phone_number=temporary_data.phone_number,
+            transaction_uuid=oid,
+        )
 
-            if 'status' in response_content and response_content['status'] == 'COMPLETE':
-                booking_data = request.session.get('booking_data')
+        # temp_data = TemporaryBookingData.objects.get(oid)
+        # print(temp_data)
 
-                if not booking_data:
-                    return HttpResponseBadRequest("Booking data not found")
+        success_redirect_url = f'http://localhost:5173/user/{booking.user_id}/paymentSuccess?status=COMPLETE'
+        
+        return redirect(success_redirect_url)
+    
+    else:
+        return JsonResponse({'message': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-                booking = Booking.objects.create(
-                    user_id=booking_data['user_id'],
-                    turf_id=booking_data['turf_id'],
-                    phone_number=booking_data['phone_number'],
-                    date=booking_data['date'],
-                    start_time=booking_data['start_time'],
-                    end_time=booking_data['end_time'],
-                    payment_status='Paid',
-                    amount=booking_data['amount']
-                )
-
-                payment = Payment.objects.create(
-                    booking=booking,
-                    amount=total_amount,
-                    payment_method='online',
-                    phone_number=booking_data['phone_number']
-                )
-
-                del request.session['booking_data']
-                request.session.save()
-
-                frontend_success_url = 'http://localhost:5173/user/2/bookingHistory'  # Replace with your frontend success URL
-                return redirect(frontend_success_url)
-
-            return HttpResponseBadRequest("Payment verification failed")
-
-        except Exception as e:
-            return HttpResponseServerError(f"Error saving booking: {str(e)}")
-
-    return HttpResponseBadRequest("Invalid HTTP method")
-
+        
 
 @api_view(['GET'])
 def payment_failure(request):
-    if 'booking_data' in request.session:
-        del request.session['booking_data']
-        request.session.save()
-
-    return HttpResponseBadRequest("Payment Failed")
+    return redirect(f'http://localhost:5173/user/paymentFailure/')
 
 
 def calculate_booking_amount(turf_id, start_time, end_time):
@@ -292,7 +294,28 @@ def calculate_booking_amount(turf_id, start_time, end_time):
     
     except TurfDetails.DoesNotExist:
         raise ValueError('Turf not found')
-    
+
+
+#Generate Booking id
+
+def generate_booking_id():
+        today = timezone.now()
+        year = today.strftime('%Y')
+        month = today.strftime('%m')
+        
+        # Find the latest booking number for the current year and month
+        latest_booking = Booking.objects.filter(
+            booking_id__startswith=f"{year}/{month}/"
+        ).order_by('-booking_id').first()
+
+        if latest_booking:
+            last_number = int(latest_booking.booking_id.split('/')[-1])
+        else:
+            last_number = 0
+
+        next_number = last_number + 1
+        return (f"{year}/{month}/{next_number:04d}")
+
 
 @api_view(['GET'])
 def booking_history(request):
@@ -303,3 +326,6 @@ def booking_history(request):
     bookings = Booking.objects.filter(user_id=user_id).order_by('-booking_date')
     serializer = BookingSerializer(bookings, many=True)
     return Response(serializer.data)
+
+
+

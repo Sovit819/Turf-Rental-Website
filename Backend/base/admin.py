@@ -1,9 +1,10 @@
 
+from django.contrib import messages
 from django.contrib import admin
 from django import forms
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, TurfDetails, TurfImage, Booking, Payment
-from django.forms import inlineformset_factory
+from django.forms import  inlineformset_factory
 
 
 # Custom User Admin
@@ -58,14 +59,22 @@ class TurfDetailsAdmin(admin.ModelAdmin):
     )
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('user', 'turf', 'date', 'start_time', 'end_time', 'phone_number','amount','payment_status')
-    search_fields = ('user__email', 'turf__name')
+    list_display = ('user', 'turf', 'date', 'start_time', 'end_time', 'phone_number','amount','payment_status', 'booking_date','booking_id')
+    search_fields = ('user__email', 'turf__name', 'booking_id')
     list_filter = ('date', 'turf', 'payment_status')
     autocomplete_fields = ['user'] 
+
+    def save_model(self, request, obj, form, change):
+        if change:  # Check if the object is being changed (not created)
+            original_booking = Booking.objects.get(pk=obj.pk)
+            if original_booking.payment_status == 'Paid' and obj.payment_status == 'Pending':
+                messages.error(request, "Cannot change payment status from Paid to Pending.")
+                return
+        super().save_model(request, obj, form, change)
 
 # Payment Admin
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ('booking', 'amount', 'payment_method')
-    search_fields = ('booking__user__email', 'booking__turf__name')
+    list_display = ('booking', 'amount', 'payment_method','phone_number', 'transaction_uuid')
+    search_fields = ('booking', 'phone_number')
     list_filter = ('payment_method',)

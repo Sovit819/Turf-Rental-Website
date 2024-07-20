@@ -30,12 +30,12 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 #payment
-ESEWA_MERCHANT_ID = '9806800001'
+ESEWA_MERCHANT_ID = 'EPAYTEST'
 ESEWA_SECRET_KEY = '8gBm/:&EnhH.1/q'
-ESEWA_SUCCESS_URL = 'http://localhost:5173'  
-ESEWA_FAILURE_URL = 'http://localhost:8000/api/payment-failure'
+ESEWA_SUCCESS_URL = 'http://localhost:8000/api/payment-success/'  
+ESEWA_FAILURE_URL = 'http://localhost:8000/api/payment-failure/'
 
-SUCCESS_REDIRECT_URL = 'http://localhost:5173/user/{user_id}/bookingHistory'
+# SUCCESS_REDIRECT_URL = 'http://localhost:5173/user/{user_id}/bookingHistory'
 
 # Application definition
 
@@ -112,10 +112,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = 600
-SESSION_COOKIE_NAME = 'sessionid' 
-SESSION_COOKIE_HTTPONLY = True
 
 
 ROOT_URLCONF = 'Backend.urls'

@@ -1,4 +1,4 @@
-// AuthProvider.js
+
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [authTokens, setAuthTokens] = useState(() => 
+    const [authTokens, setAuthTokens] = useState(() =>
         localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null
     );
     const [user, setUser] = useState(() =>
@@ -16,11 +16,12 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    const signinUser = async (username, password) => {
+    const signinUser = async (email, password) => {
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/token/', {
-                username,
-                password
+            const response = await axios.post('http://127.0.0.1:8000/api/signin/', {
+                email: email,
+                password: password,
+                
             });
 
             const data = response.data;
@@ -31,13 +32,13 @@ export const AuthProvider = ({ children }) => {
 
                 // Fetch additional user details from backend after successful login
                 const userDetailsResponse = await axios.get(`http://127.0.0.1:8000/api/users/${decodedToken.user_id}/`);
-                console.log(userDetailsResponse)
                 const userDetails = userDetailsResponse.data;
 
                 // Update user object with additional details (phone_number, id, etc.)
                 setUser(prevUser => ({
                     ...prevUser,
                     id: userDetails.id,
+                    username: userDetails.username,
                     phone_number: userDetails.phone_number,
                 }));
 
@@ -47,8 +48,7 @@ export const AuthProvider = ({ children }) => {
                 alert('Something went wrong!');
             }
         } catch (error) {
-            console.error('Error signing in:', error);
-            alert('An error occurred. Please try again.');
+            throw error
         }
     };
 
@@ -73,6 +73,7 @@ export const AuthProvider = ({ children }) => {
                     setUser(prevUser => ({
                         ...prevUser,
                         id: userDetails.id,
+                        username: userDetails.username,
                         phone_number: userDetails.phone_number,
                     }));
 

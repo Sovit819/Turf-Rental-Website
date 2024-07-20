@@ -20,14 +20,15 @@ const Header = () => {
                         <li className="nav-item">
                             <Link className="nav-link" to="/">Home</Link>
                         </li>
+
                         <li className="nav-item">
-                            <Link className="nav-link" to={`/user/${user.id}/bookingHistory`}>Booking History</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/about">About Us</Link>
+                            <Link className="nav-link" to="/aboutus">About Us</Link>
                         </li>
                         {user ? (
                             <>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to={`/user/${user.id}/bookingHistory`}>Booking History</Link>
+                                </li>
                                 <li className="nav-item">
                                     <span className="navbar-text me-2">Hello, {user.username}</span>
                                 </li>

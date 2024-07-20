@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from '../Context/AuthContext';
 import Pagination from 'react-bootstrap/Pagination';
+import "../App.css";
 
 const BookingHistory = () => {
     const [bookings, setBookings] = useState([]);
@@ -15,8 +16,7 @@ const BookingHistory = () => {
         const fetchBookingHistory = async () => {
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/api/booking-history/?user_id=${user.id}&ordering=-date`);
-                console.log('API response:', response.data);
-
+                
                 if (Array.isArray(response.data)) {
                     setBookings(response.data);
                 } else {
@@ -70,7 +70,7 @@ const BookingHistory = () => {
                 </thead>
                 <tbody>
                     {currentBookings.map((booking, index) => (
-                        <tr key={booking.id}>
+                        <tr key={booking.booking_id}>
                             <td>{indexOfFirstBooking + index + 1}</td>
                             <td>{booking.turf}</td>
                             <td>{booking.date}</td>
@@ -86,7 +86,9 @@ const BookingHistory = () => {
             <div className="d-flex justify-content-center">
                 <Pagination>
                     {Array.from({ length: Math.ceil(bookings.length / bookingsPerPage) }, (_, index) => (
-                        <Pagination.Item key={index + 1} onClick={() => paginate(index + 1)} active={index + 1 === currentPage}>
+                        <Pagination.Item key={index + 1} 
+                        onClick={() => paginate(index + 1)} 
+                        active={index + 1 === currentPage}>
                             {index + 1}
                         </Pagination.Item>
                     ))}

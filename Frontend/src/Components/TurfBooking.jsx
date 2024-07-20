@@ -15,6 +15,7 @@ function TurfBooking() {
     const [paymentMethod, setPaymentMethod] = useState('esewa');
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [message, setMessage] = useState('');
 
     const formatDate = (date) => {
         const year = date.getFullYear();
@@ -56,19 +57,22 @@ function TurfBooking() {
                     const cashPaymentResponse = await axios.post('http://127.0.0.1:8000/api/initiate-payment/', bookingData);
 
                     if (cashPaymentResponse.status === 201) {
-                        alert('Booking Successful with Cash Payment');
+                        setMessage('Booking Successful with Cash Payment');
                         navigate(`/user/${user.id}/bookingHistory`);
                     } else {
                         setErrorMessage('Failed to book with cash payment. Please try again.');
                     }
-                } else {
-                    const initiatePaymentResponse = await axios.post('http://127.0.0.1:8000/api/initiate-payment/', bookingData, { withCredentials: true });
+                } 
+                
+                else if(paymentMethod === 'esewa') {
+                    const initiatePaymentResponse = await axios.post('http://127.0.0.1:8000/api/initiate-payment/', bookingData);
 
                     if (initiatePaymentResponse.status === 200) {
                         const esewaRedirectUrl = initiatePaymentResponse.data.redirectUrl;
-                        window.location.href = esewaRedirectUrl;  // This handles the redirection
+                        window.location.href = esewaRedirectUrl; 
+                        
                     } else {
-                        setErrorMessage('Failed to initiate payment. Please try again.');
+                        setErrorMessage('Failed to initiate payment with Esewa. Please try again.');
                     }
                 }
             } else {
